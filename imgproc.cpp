@@ -8,7 +8,7 @@ namespace IPCVL {
 			for (int y = 0; y < inputMat.rows; y++) {
 				for (int x = 0; x < inputMat.cols; x++) {
 					// Todo : histogram을 쌓습니다. 
-
+					int a = 0;
 					/** your code here! **/
 
 					// hint 1 : for loop 를 이용해서 cv::Mat 순회 시 (1채널의 경우) 
