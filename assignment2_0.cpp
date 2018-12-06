@@ -10,7 +10,7 @@
 #include "examples.h"
 
 int main() {
-	cv::Mat srcMat = cv::imread("./samples/sample2_0.bmp", cv::IMREAD_GRAYSCALE);
+	cv::Mat srcMat = cv::imread("samples/sample2_0.bmp", cv::IMREAD_GRAYSCALE);
 	cv::Mat opencvResult, ourResult;
 	const int THRESHOLD = 125;
 
@@ -18,10 +18,12 @@ int main() {
 	IPCVL::IMG_PROC::thresh_binary(srcMat, ourResult, THRESHOLD);
 
 	//Sanity Check
+	
 	cv::Mat diff = cv::abs(ourResult / 255 - opencvResult / 255);
 	double error = cv::sum(diff)[0] / (srcMat.cols * srcMat.rows);
 	std::cout << "error: " << error << std::endl;
 	floorf(error * 100) / 100 == 0 ? std::cout << "PASS!!!" << std::endl : std::cout << "FAIL..." << std::endl;
+	
 
 	//Show Result
 	cv::imshow("Input Image", srcMat);

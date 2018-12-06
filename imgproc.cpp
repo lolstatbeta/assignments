@@ -76,6 +76,24 @@ namespace IPCVL {
 				}
 			}
 		}
+
+		void thresh_binary(cv::InputArray src, cv::OutputArray dst, const int & threshold)
+		{
+			cv::Mat inputMat = src.getMat();
+			dst.create(inputMat.size(), CV_8UC1);
+			cv::Mat outputProb = dst.getMat();
+			outputProb.setTo(cv::Scalar(0.));
+
+			for (int y = 0; y < inputMat.rows; y++) {
+				for (int x = 0; x < inputMat.cols; x++) {
+					if (inputMat.at<uchar>(y, x) >= threshold)
+						outputProb.at<uchar>(y, x) = 255;
+					else
+						outputProb.at<uchar>(y, x) = 0;
+				}
+			}
+
+		}
 	}  // namespace IMG_PROC
 
 }
