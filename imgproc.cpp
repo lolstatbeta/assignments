@@ -94,6 +94,61 @@ namespace IPCVL {
 			}
 
 		}
+		void thresh_otsu(cv::InputArray src, cv::OutputArray dst)
+		{
+			cv::Mat inputMat = src.getMat();
+			dst.create(inputMat.size(), CV_8UC1);
+			cv::Mat outputProb = dst.getMat();
+			outputProb.setTo(cv::Scalar(0.));
+
+			int inputHistogram[256] = { 0, };
+			double Histogram_Normal[256] = { 0, };
+			double w0[256] = { 0, };
+			double u0[256] = { 0, };
+			double u1[256] = { 0, };
+			double between_V[256] = { 0, };
+
+			calcHist(inputMat, inputHistogram);
+
+			// h^ 계산 
+			for (int j = 0; j < 256; j++) {
+				Histogram_Normal[j] = (double)inputHistogram[j] / (double)(inputMat.rows * inputMat.cols);
+			}
+
+			double u = 0.0;
+			for (int j = 0; j < 256; j++) {
+				u += (j*Histogram_Normal[j]);
+			}
+
+			// t>0 --> w0, u0, u1, between_Variance 계산
+			for (int j = 0; j < 256; j++) {
+				if (j == 0)
+				{
+					// t=0 초기값
+					w0[0] = Histogram_Normal[0];
+					u0[0] = 0.0;
+				}
+				else {
+					w0[j] = w0[j - 1] + Histogram_Normal[j];
+					if (w0[j] == 0.0 || (1-w0[j]) == 0.0)
+					continue;
+					u0[j] = ((w0[j - 1] * u0[j - 1]) + (j*Histogram_Normal[j])) / w0[j];
+					u1[j] = (u - (w0[j] * u0[j])) / (1 - w0[j]);
+					between_V[j] = w0[j] * (1 - w0[j])*(u0[j] - u1[j])*(u0[j] - u1[j]);
+				}
+			}
+
+			double max = 0.0;
+			int threshold = 0;
+			for (int i = 1; i < 256; i++) {
+				if (between_V[i] > max) {
+					max = between_V[i];
+					threshold = i;
+				}
+			}
+
+			thresh_binary(inputMat, outputProb, threshold);
+		}
 	}  // namespace IMG_PROC
 
 }
